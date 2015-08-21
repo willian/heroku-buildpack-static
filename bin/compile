@@ -45,9 +45,3 @@ if [ -d "$env_dir" ]; then
   status "Exporting config vars to environment"
   export_env_dir $env_dir
 fi
-
-# Persist goodies like node-version in the slug
-mkdir -p $build_dir/.heroku
-
-# Copy goodies to the cache
-cp -r $build_dir/.heroku $cache_dir/node
