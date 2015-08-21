@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -e            # fail fast
+set -o pipefail   # do not ignore exit codes when piping output
+# set -x          # enable debugging
+
+build_dir=$1
+cache_dir=$2
+env_dir=$3
+bp_dir=$(cd $(dirname $0); cd ..; pwd)
+
+# Fix leak
+unset GIT_DIR
+
+# Load some convenience functions like status(), echo(), and indent()
+source $bp_dir/bin/common.sh
+
+# REMOVE:
+# export_env_dir $env_dir
+# build_env=${EMBER_ENV:-production}
+# status "Building environment: $build_env"
+
+mkdir -p $build_dir/vendor
+
+status "Downloading and installing nginx"
+nginx_url=https://s3.amazonaws.com/devmynd-github/heroku-nginx-1.6.0.tar.gz
+curl $nginx_url -s -o - | tar xzf - -C $build_dir/vendor
+
+status "Adding boot script"
+cp $bp_dir/bin/boot.sh $build_dir
+
+status "Copying configs"
+mkdir -p $build_dir/config
+cp $bp_dir/config/htpasswd.rb $build_dir/config
+cp $bp_dir/config/mime.types $build_dir/config
+if [[ ! -f $build_dir/config/nginx.conf.erb ]]; then
+  cp $bp_dir/config/nginx.conf.erb $build_dir/config
+else
+  status "Custom nginx config found"
+fi
+
+cd $build_dir
+
+if [ -d "$env_dir" ]; then
+  status "Exporting config vars to environment"
+  export_env_dir $env_dir
+fi
+
+# Persist goodies like node-version in the slug
+mkdir -p $build_dir/.heroku
+
+# Copy goodies to the cache
+cp -r $build_dir/.heroku $cache_dir/node
