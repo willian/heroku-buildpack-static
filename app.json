@@ -1,0 +1,10 @@
+{
+  "name": "Static Website",
+  "description": "Ready for your static website with Buildpack set up",
+  "repository": "https://github.com/willian/heroku-buildpack-static",
+  "logo": "http://www.w3.org/html/logo/badge/html5-badge-h-css3-semantics.png",
+  "keywords": ["static", "html", "nginx"],
+  "env": {
+    "BUILDPACK_URL": "https://github.com/willian/heroku-buildpack-static.git"
+  }
+}
