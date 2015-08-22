@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # bin/detect <build-dir>
 
-if [ -f $1/index.html ]; then
+if [ -f $1/dist/index.html ]; then
   echo "Static Page" && exit 0
 else
   echo "no" && exit 1
